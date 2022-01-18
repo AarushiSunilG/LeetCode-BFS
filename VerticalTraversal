@@ -1,0 +1,94 @@
+/**
+* https://leetcode.com/problems/vertical-order-traversal-of-a-binary-tree/
+*/
+
+/**
+ * Definition for a binary tree node.
+ * public class TreeNode {
+ *     int val;
+ *     TreeNode left;
+ *     TreeNode right;
+ *     TreeNode() {}
+ *     TreeNode(int val) { this.val = val; }
+ *     TreeNode(int val, TreeNode left, TreeNode right) {
+ *         this.val = val;
+ *         this.left = left;
+ *         this.right = right;
+ *     }
+ * }
+ */
+class Solution {
+    public List<List<Integer>> verticalTraversal(TreeNode root) {
+        List<List<Integer>> res = new ArrayList<>();
+        
+        HashMap<Integer, List<Integer>> mapM = new HashMap<>();
+        
+        // take 2 queues rather than pair to save time.
+        // It is imp to maintain the col number.
+        
+        Queue<TreeNode> q = new LinkedList<>();         
+        Queue<Integer> qcol = new LinkedList<>();
+        
+        q.offer(root);
+        qcol.offer(0);
+        int minCol = 0;
+        int maxCol = 0;
+        while(!q.isEmpty()){
+            
+            int size = q.size();
+            HashMap<Integer, List<Integer>> map = new HashMap<>();
+            
+            while(size--!=0){
+                
+                TreeNode node = q.poll();
+                int col = (int) qcol.poll();          
+               
+                if(!map.containsKey(col)){
+                    List<Integer> l = new ArrayList<>();
+                    l.add(node.val);
+                    map.put(col,l);
+                }else{
+                    map.get(col).add(node.val);
+                }
+                
+                if(node.left!=null){
+                    q.offer(node.left);
+                    qcol.offer(col-1);
+                    minCol = Math.min(minCol,col-1);
+                }
+                
+                if(node.right!=null){
+                    q.offer(node.right);
+                    qcol.offer(col+1);
+                    maxCol = Math.max(maxCol,col+1);
+                }
+            }
+            
+            
+            for(Map.Entry<Integer, List<Integer>> entry : map.entrySet()){
+                List<Integer> l =entry.getValue();
+                Integer colkey = entry.getKey();
+                if(l.size()>1){
+                    l.sort(null);
+                }
+                
+                if(mapM.containsKey(colkey)){
+                    mapM.get(colkey).addAll(l);
+                }else{
+                    mapM.put(colkey,l);
+                }
+            }
+        }
+        
+        for(int i=minCol; i<=maxCol; i++){
+            if(!mapM.containsKey(i)){
+                break;
+            }else{
+                List<Integer> l = mapM.get(i);
+                res.add(l);
+            }
+        }
+        
+        return res;
+    }
+}
