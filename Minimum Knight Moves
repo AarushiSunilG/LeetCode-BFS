@@ -1,0 +1,72 @@
+// Minimum Knight Moves	
+// https://leetcode.com/problems/minimum-knight-moves/
+
+//## Symmetry ->use this factor in minimizing the search space. 
+//## notice how take the target coordinate as initial position and target loc as (0,0)
+//## check the constraints on coordinates.
+//## notice that a knight will atmost move 2 more boxes to reach required location. Use this in constraints
+
+
+
+class Solution {
+    
+    public static int[][] DIR ={{-1,2},{1,-2},{1,2},{-1,-2},{2,1},{2,-1},{-2,1},{-2,-1}};
+    
+    public int minKnightMoves(int x, int y) {
+    
+        if(x==0 && y==0 ){
+            return 0;
+        }
+        int min = Integer.MAX_VALUE;
+        int moves=0;
+        HashSet<Pair> visited= new HashSet<>();
+        Queue<Pair> q = new LinkedList<>();
+        
+        //minimizing search space as symmetric in all quadrants.
+        x = Math.abs(x);
+        y = Math.abs(y);
+        q.offer(new Pair(x,y));    
+        visited.add(new Pair(x,y));
+        
+        while(!q.isEmpty()){
+            
+            int size=q.size();
+            moves++;
+            while(size-- !=0){
+               min= populate(q,visited,0,0,min,moves);
+            }
+            
+        }
+        
+        return min;
+    }
+    
+    
+    private int populate(Queue<Pair> q, HashSet<Pair> visited, int ti, int tj,
+                          int min, int moves){
+        
+        Pair<Integer, Integer> curr = q.poll();
+        for(int[] dir : DIR){
+            int nX = (int)curr.getKey() + dir[0];
+            int nY = (int)curr.getValue() + dir[1];
+            
+            if(nX==ti && nY==tj){
+                min=Math.min(min,moves);
+                return min;
+            }
+            
+            if(nX>=-2 && nX<= 302 && nY>=-2 && nY<=302 
+               && (Math.abs(nX)+Math.abs(nY)<=310)){
+               
+                Pair<Integer,Integer> p = new Pair(nX,nY);
+                if(!visited.contains(p)){
+                    q.offer(p);
+                    visited.add(p);
+                }
+                
+            }
+        }
+        
+        return min;
+    }
+}
